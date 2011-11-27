@@ -1,0 +1,4 @@
+#W don't need to upload the object files and exes
+*.o
+*.exe
+*~
