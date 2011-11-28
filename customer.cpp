@@ -1,5 +1,5 @@
 #include<iostream>
-#include<conio.h>
+#include<string>
 #include<fstream>
 #include "auctioned_items.h"
 #include<iomanip>
@@ -8,12 +8,10 @@
 
 using namespace std;
 
-struct bid
+bool is_empty(std::ifstream& pFile)
 {
-       int item;
-       float price;
-       int user;
-}arr[10];
+    return pFile.peek() == std::ifstream::traits_type::eof();
+}
 
 class CUSTOMER
 {
@@ -34,109 +32,49 @@ void CUSTOMER::display_items()
      AUCTIONING_ITEM auc;
      auc.outputdata();
 }
-/*
-void CUSTOMER::buy2()
-{
-     int i=0;
-     int flag = 0;
-     cout<<"\nEnter the value for item:";
-     cin>>itemd;
-     cout<<"\nEnter the bidding value:";
-     cin>>priced;
-     cout<<"\nEnter the user id:";
-     cin>>userd;
-     CUSTOMER obj;
-     obj.putdata();
-     ifstream file1;
-     fstream file2;
-     file1.open("BID.DAT");
-     while(file1.read((char *)&(arr[++i]),sizeof(struct bid)));
-     file1.close();
-     for(int j=1;j<=i;j++)
-     {
-             if(itemd == arr[j].item)
-             {
-               if(priced > arr[j].price)
-               {
-                 arr[j].price = priced;
-                 arr[j].user = userd;
-              }
-              flag =1 ;
-              break;
-               
-             }
-     }
-    if(flag==0)
-    {
-       ++i;
-       arr[i].item = itemd;
-       arr[i].price = priced;
-       arr[i].user = userd;
-    }
-    
-    file2.open("BID.DAT", ios::app | ios::out);
-    for(int j=1;j<=i;j++)
-    {
-            file2.write((char *)&(arr[j]),sizeof(struct bid));
-    }
-    
-   file2.close();  
-}
-
-*/
 
 void CUSTOMER::bid()
 {
-     fstream outfile;
-     ifstream infile;
-     int loc,end;
-     CUSTOMER obj;
-     obj.putdata();
-     int flag=0;
-     infile.open("BID.DAT");
-     
-     fflush(stdin);
-      cout<<"Enter your id : \t";
-     cin.getline(userd, SIZE);
-     cout<<"\nEnter the item id you want to place a bid for : \t";
-     cin>>itemd;
-     cout<<"\nEnter the price you want to place the bid for :\t";
-     cin>>priced;
-      while(infile.read((char *)&obj,sizeof(obj)))
-      {
-           if(obj.itemd == itemd)
-           {
-                flag=1;
-                break;
-           }
-      }
-      loc = infile.tellg();
-      cout<<"current pos:"<<loc;
-      infile.seekg(0,ios::end);
-      end = infile.tellg();
-      cout<<"end of file:"<<end;
-      infile.close();
-      if(flag==1)
-      {
-                 if( obj.priced < priced)
-                 {    
-                      outfile.open("BID.DAT",ios::out| ios::app|ios::ate|ios::binary);
-                      cout<<"\n"<<loc-sizeof(CUSTOMER);
-                      outfile.seekp(loc-sizeof(CUSTOMER));
-                      cout<<"\n"<<outfile.tellp();
-                      outfile.write((char *)this,sizeof(*this));
-                      outfile.close();
-                 }
-      }
-      else
-      {
-          outfile.open("BID.DAT",ios::out| ios::app);
-          outfile.write((char *)this,sizeof(*this));
-          outfile.close();
-
-      }          
-          //  infile.close(); 
-             obj.putdata();     
+	ifstream fin;
+	ofstream fout;
+	
+	int item_id;
+	char user_id[80];
+	float price_id;
+	cout<<"item user price"<<endl;
+	cin>>item_id>>user_id>>price_id;
+	fin.open("bid.dat",ios::in);
+	fout.open("tmp.dat",ios::out);
+	CUSTOMER object,t_obj;
+	strcpy(object.userd,user_id);
+	object.priced = price_id;
+	object.itemd = item_id;
+	cout<<object.itemd<<endl;
+	system("pause");
+	//check if the file is empty as it will be the first time
+	if( is_empty(fin) )
+	{
+        cout<<"New file found";
+        fout.write((char*)&object,sizeof(object));
+    }
+    
+	while(!fin.eof())
+	{
+		fin.read((char*)&t_obj,sizeof(t_obj));
+		if( object.itemd == t_obj.itemd && object.priced > t_obj.priced )
+		{
+			fout.write((char*)&object,sizeof(object));
+		}
+		string tmp;
+		cout<<"I just wrote "<<t_obj.itemd<<endl;
+		fout.write((char*)&t_obj,sizeof(t_obj));
+	}
+	fin.close();
+	fout.close();
+	
+	//copy tmp into bid
+	system("move tmp.dat bid.dat");
+	this->putdata();
 }
 void CUSTOMER:: putdata(void)
              {
@@ -173,5 +111,4 @@ int main()
                  default : cout<<"\n Invalid option";
              }
     }
-    getch();
 }

@@ -1,0 +1,144 @@
+#include<iostream>
+#include<conio.h>
+#include<fstream>
+#include "auctioned_items.h"
+#include<iomanip>
+#include "auction.h"
+#define SIZE 100
+
+using namespace std;
+
+
+class CUSTOMER
+{
+      private:
+              int itemd;
+              float priced;
+              char userd[10];
+      public:
+         void buy();
+         void bid();
+         void buy2();
+         void display_items();
+         void putdata();
+};
+
+void CUSTOMER::display_items()
+{
+     AUCTIONING_ITEM auc;
+     auc.outputdata();
+}
+
+void CUSTOMER::bid()
+{
+     fstream outfile;
+     ifstream infile;
+     int loc,end;
+     CUSTOMER obj;
+     obj.putdata();
+     int flag=0;
+     infile.open("BID.DAT");
+     
+     fflush(stdin);
+      cout<<"\nEnter your id : \t";
+     cin.getline(userd, SIZE);
+     cout<<"\nEnter the item id you want to place a bid for : \t";
+     cin>>itemd;
+     cout<<"\nEnter the price you want to place the bid for :\t";
+     cin>>priced;
+      outfile.open("tmp.dat",ios::out);
+      while(infile.read((char *)&obj,sizeof(obj)))
+      {
+                 if(obj.itemd == itemd)
+           {
+                CUSTOMER ob2;
+                strcpy(ob2.userd,userd);
+                ob2.itemd = itemd;
+                ob2.priced = priced;
+                outfile.write((char*)&ob2,sizeof(ob2));
+           }
+           else
+           {
+               outfile.write((char*)&obj,sizeof(obj));
+           }
+           
+      }
+      outfile.close();
+      loc = infile.tellg();
+     // cout<<"current pos:"<<loc;
+      infile.seekg(0,ios::end);
+      end = infile.tellg();
+      //cout<<"end of file:"<<end;
+      infile.close();
+      /*if(flag==1)
+      {
+                 if( obj.priced < priced)
+                 {    
+                      outfile.open("BID.DAT",ios::out| ios::app|ios::ate|ios::binary);
+                      cout<<"\n"<<loc-sizeof(CUSTOMER);
+                      outfile.seekp(loc-sizeof(CUSTOMER));
+                      cout<<"\n"<<outfile.tellp();
+                      outfile.write((char *)this,sizeof(*this));
+                      outfile.close();
+                 }
+      }
+      else
+      */
+      //copy tmp.dat into bid.dat
+      infile.open("tmp.dat",ios::in);
+      outfile.open("bid.dat",ios::out);
+      while( !infile.eof() ) 
+      
+      {
+             infile.read((char*)&obj,sizeof(obj));
+             outfile.write((char *)&obj,sizeof(obj));
+      }
+      
+      infile.close();
+      outfile.close();       
+      {
+          outfile.open("BID.DAT",ios::out| ios::app);
+          outfile.write((char *)this,sizeof(*this));
+          outfile.close();
+
+      }          
+          //  infile.close(); 
+             obj.putdata();     
+}
+void CUSTOMER:: putdata(void)
+             {
+                  ifstream infile;
+                  infile.open("BID.DAT");
+                  while(infile.read((char *)this,sizeof(*this)))
+                  {
+                  cout<<"\nUSER id : "<<userd;
+                  cout<<"\nItem id : "<<itemd;
+                  cout<<"\nprice : "<<priced;
+                  }
+                  infile.close();
+             }
+             
+     
+int main()
+{
+    CUSTOMER cust;
+    int op;
+    while(1){
+    cout<<"\n Welcome customer, these are your options : \n";
+    cout<<"\n 1. CHECK AVAILABLE ITEMS IN THE AUCTION SYSTEM . \n";
+    cout<<"\n 2. PLACE A BID FOR ONE SPECIFIC ITEM .\n";
+    cout<<"\n 3. EXIT. \n";
+    cin>>op;
+             switch(op)
+             {
+                case 1: cust.display_items();
+                  break;
+                 case 2: cust.bid();
+                  break;
+                 case 3: exit(0);
+                      break;
+                 default : cout<<"\n Invalid option";
+             }
+    }
+    getch();
+}
