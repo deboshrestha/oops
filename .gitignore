@@ -1,4 +1,9 @@
-#W don't need to upload the object files and exes
+#We don't need to upload the object files and exes
 *.o
 *.exe
 *~
+*.swp
+
+#Dev Cpp windows specific files aren't needed either
+*.dev
+*.win

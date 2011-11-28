@@ -1,114 +1,67 @@
+#include "customer.h"
 #include<iostream>
-#include<string>
-#include<fstream>
-#include "auctioned_items.h"
-#include<iomanip>
-#include "auction.h"
-#define SIZE 100
-
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <cstdlib>
 using namespace std;
 
-bool is_empty(std::ifstream& pFile)
-{
-    return pFile.peek() == std::ifstream::traits_type::eof();
-}
-
-class CUSTOMER
-{
-      private:
-              int itemd;
-              float priced;
-              char userd[10];
-      public:
-         void buy();
-         void bid();
-         void buy2();
-         void display_items();
-         void putdata();
-};
-
-void CUSTOMER::display_items()
-{
-     AUCTIONING_ITEM auc;
-     auc.outputdata();
-}
-
-void CUSTOMER::bid()
-{
-	ifstream fin;
-	ofstream fout;
-	
-	int item_id;
-	char user_id[80];
-	float price_id;
-	cout<<"item user price"<<endl;
-	cin>>item_id>>user_id>>price_id;
-	fin.open("bid.dat",ios::in);
-	fout.open("tmp.dat",ios::out);
-	CUSTOMER object,t_obj;
-	strcpy(object.userd,user_id);
-	object.priced = price_id;
-	object.itemd = item_id;
-	cout<<object.itemd<<endl;
-	system("pause");
-	//check if the file is empty as it will be the first time
-	if( is_empty(fin) )
-	{
-        cout<<"New file found";
-        fout.write((char*)&object,sizeof(object));
+//temporary hack to avoid double definition
+std::vector<std::string> split_string(const std::string &s, char delim) {
+  std::vector<std::string> elems;
+  std::stringstream ss(s);
+  std::string item;
+    while(std::getline(ss, item, delim)) {
+      elems.push_back(item);
     }
-    
-	while(!fin.eof())
-	{
-		fin.read((char*)&t_obj,sizeof(t_obj));
-		if( object.itemd == t_obj.itemd && object.priced > t_obj.priced )
-		{
-			fout.write((char*)&object,sizeof(object));
-		}
-		string tmp;
-		cout<<"I just wrote "<<t_obj.itemd<<endl;
-		fout.write((char*)&t_obj,sizeof(t_obj));
-	}
-	fin.close();
-	fout.close();
-	
-	//copy tmp into bid
-	system("move tmp.dat bid.dat");
-	this->putdata();
+    return elems;
 }
-void CUSTOMER:: putdata(void)
-             {
-                  ifstream infile;
-                  infile.open("BID.DAT");
-                  while(infile.read((char *)this,sizeof(*this)))
-                  {
-                  cout<<"\nUSER id : "<<userd;
-                  cout<<"\nItem id : "<<itemd;
-                  cout<<"\nprice : "<<priced;
-                  }
-                  infile.close();
-             }
-             
-     
-int main()
+
+Customer::Customer(string n,int id)
+  :customer_name(n),customer_id(id){};
+
+void Customer::bid(Item i,float new_price)
 {
-    CUSTOMER cust;
-    int op;
-    while(1){
-    cout<<"\n Welcome customer, these are your options : \n";
-    cout<<"\n 1. CHECK AVAILABLE ITEMS IN THE AUCTION SYSTEM . \n";
-    cout<<"\n 2. PLACE A BID FOR ONE SPECIFIC ITEM .\n";
-    cout<<"\n 3. EXIT. \n";
-    cin>>op;
-             switch(op)
-             {
-                case 1: cust.display_items();
-                  break;
-                 case 2: cust.bid();
-                  break;
-                 case 3: exit(0);
-                      break;
-                 default : cout<<"\n Invalid option";
-             }
+  //we open the bid file for the given item
+  //the file is stored as a text file in the bids directory
+  ifstream fin(i.bid_file_name().c_str());
+  ofstream fout;
+
+  //to check if the file exists
+  if (fin.good())
+  {
+    string line;
+    getline(fin,line);
+    fin.close();
+    //we need to see if the value is greater than the old bid price
+    vector<string> tokens = split_string(line,' ');
+    if( atof(tokens[2].c_str()) < new_price )
+    {
+      //write the updated bidding information
+      fout.open(i.bid_file_name().c_str());
+      stringstream bid_data;
+      bid_data << i.get_seller_id() <<" "<<customer_id <<" " <<new_price;
+      fout << bid_data.str();
+      fout.close();
+      cout<<"Bid Successfully placed"<<endl;
     }
+    else
+    {
+      cout<<"Somebody has outbid you"<<endl;
+    }
+
+  }
+  else
+  {
+    //if the file doesn't exist then we come to this part
+    //place the bid if the new_price is greater than the min price
+    //i'm ommiting the logic for that but you must implement that
+    fin.close();
+    fout.open(i.bid_file_name().c_str());
+    stringstream bid_data;
+    bid_data << i.get_seller_id() <<" "<<customer_id <<" " <<new_price;
+    fout << bid_data.str();
+    fout.close();
+    cout<<"Bid Successfully placed"<<endl;
+  }
 }
