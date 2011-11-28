@@ -7,3 +7,4 @@
 #Dev Cpp windows specific files aren't needed either
 *.dev
 *.win
+*.layout
