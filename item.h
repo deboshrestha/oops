@@ -4,6 +4,8 @@
 #include<set>
 #include<string>
 
+
+
 class Item
 {
       private:
@@ -44,6 +46,7 @@ class Item
   //other utility functions these will be defined in the items.cpp file
   static std::set<Item> getItems();
   std::string bid_file_name();
+  std::string item_file_name();
 
 };
 #endif

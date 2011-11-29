@@ -47,3 +47,10 @@ string Item::bid_file_name()
   out << "bids/" << item_id << ".bid";
   return out.str();
 }
+
+string Item::item_file_name()
+{
+  stringstream out;
+  out << "items.list";
+  return out.str();
+}
