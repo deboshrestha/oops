@@ -135,3 +135,7 @@ void Customer::bid(Item i,float new_price)
 		}
 	}
 }
+
+void Customer::item_display()
+{
+     
