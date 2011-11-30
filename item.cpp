@@ -48,9 +48,4 @@ string Item::bid_file_name()
   return out.str();
 }
 
-string Item::item_file_name()
-{
-  stringstream out;
-  out << "items.list";
-  return out.str();
-}
+

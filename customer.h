@@ -17,7 +17,7 @@ class Customer : public User
    void bid(Item,float);
    virtual int login();
    virtual void register_func();
-   void item_display();
+   void display_items();
 };
 
 #endif //CUSTOMER

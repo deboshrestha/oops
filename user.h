@@ -6,8 +6,9 @@
 class User
 {
 	public:
-    virtual int login() ;
-    virtual void register_func();
+    virtual int login()=0;
+    virtual void register_func()=0;
+    
 };
 #endif //USER	
 	

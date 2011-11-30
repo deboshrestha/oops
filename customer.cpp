@@ -25,54 +25,45 @@ Customer::Customer(){
 
 Customer::Customer(int id)
   :customer_id(id){};
-
+  
 void Customer::register_func()
 {
-	fstream outfile;
-    outfile.open("REGISTER.TXT",ios::app|ios::out);
-    fflush(stdin);
-    cout<<"\n Enter name : ";
-    cin>>customer_name;
-    cout<<"\n Enter the user id : ";
-    cin>>customer_id;
-    cout<<"\n Enter the password:";
-    cin>>passwd;
-    outfile.write((char *)this,sizeof(*this));
-    outfile.close();
+     cout<<"Enter the user id and password: \t";
+     cin>>customer_id>>passwd;
+     ofstream fout;
+     fout.open("customer.list",ios::app);
+     stringstream register_data;
+     register_data <<customer_id <<" "<<passwd;
+     fout << register_data.str()<<endl;
+     fout.close();
+     cout<<"Registration Successfull"<<endl;
 }
 
-//I 
+
 int Customer::login()
 {
-    ifstream infile;
-    infile.open("REGISTER.TXT");
-    int user_id;
-	int pwd;
-    cout<<"enter user id:";
-    cin>>user_id;
-    cout<<"enter password:";
-    cin>>pwd;
-    int flag = 0;
-    while(infile.read((char *)this,sizeof(*this)))
-    {
-        if(user_id == customer_id && passwd == pwd)
+     cout<<"Enter the user id and password: \t";
+     cin>>customer_id>>passwd;
+      ifstream fin("customer.list");
+      string line;
+      //to check if the file exists
+        while(getline(fin,line))
         {
-            flag=1;
-            break;
-        }
-    }
-    if(flag==1)
-	{
-        cout<<"login successful!!!";
-		return user_id;
-	}
-    else
-	{
-        cout<<"login failed!!!";
-		return 0;
-	}
-        infile.close();
+         //we need to see if the value is greater than the old bid price
+         vector<string> tokens = split_string(line,' ');
+         if( (atof(tokens[0].c_str()) == customer_id) && (atof(tokens[1].c_str()) == passwd) )
+         {
+             //write the updated bidding information
+             cout<<"Log-in Successfull"<<endl;
+             fin.close();
+             return customer_id;
+         }
+      }
+      fin.close();
+      cout<<"log in unsuccessful\n";
+      return 0;
 }
+ 
 
 void Customer::bid(Item i,float new_price)
 {
@@ -113,29 +104,45 @@ void Customer::bid(Item i,float new_price)
 	
 	//to check if the new_price is greater than min_price or not
 	
-		ifstream fin(i.item_file_name().c_str());
+		ifstream fin("items.list");
 		string line;
-		getline(fin,line);
-		fin.close();
-		//we need to see if the value is greater than the minimum item price
-		vector<string> tokens = split_string(line,' ');
-		if( (atof(tokens[0].c_str()) == i.get_item_id()) && (atof(tokens[2].c_str()) < new_price) )
+		
+		while(getline(fin,line))
 		{
-      
-			fout.open(i.bid_file_name().c_str());
-			stringstream bid_data;
-			bid_data << i.get_seller_id() <<" "<<customer_id <<" " <<new_price;
-			fout << bid_data.str();
-			fout.close();
-			cout<<"Bid Successfully placed"<<endl;
-		}
-		else
-		{
-		cout<<"Enter a new price for the bid"<<endl;
-		}
-	}
+		
+                //we need to see if the value is greater than the minimum item price
+		         vector<string> tokens = split_string(line,' ');
+		        if( (atoi(tokens[0].c_str()) == i.get_item_id()) && (atof(tokens[2].c_str()) < new_price) )
+		         {
+                         fout.open(i.bid_file_name().c_str());
+			             stringstream bid_data;
+			             bid_data << i.get_seller_id() <<" "<<customer_id <<" " <<new_price;
+			             fout << bid_data.str();
+			             fout.close();
+			             cout<<"Bid Successfully placed"<<endl;
+	               }
+                if ( (atof(tokens[0].c_str()) == i.get_item_id()) && (atof(tokens[2].c_str()) > new_price) )
+               {
+                    cout<<"\nCannot place bid, please increase the amount";
+               }
+
+		       
+           }
+           fin.close();
+                      
+  }
+
+		
 }
 
-void Customer::item_display()
+    
+void Customer::display_items()
 {
-     
+    ifstream item_file("items.list");
+    string line;
+    while(getline(item_file,line))
+    {
+       cout<<line<<endl;
+    }
+    item_file.close();
+}
