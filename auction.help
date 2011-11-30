@@ -1,0 +1,7 @@
+***********XYZ AUCTIONING SYSTEM************
+In this auctioning system, both the sellera and the buyer can separately register.
+After registration an account is created for them. After logging into that account 
+through correct user id and password they can gain access to the system.
+Inside the seller module, the seller can check the list of items currently available for auctioning
+and place a bid on them.
+Inside the buyer module, the buyer can insert an item for auction.

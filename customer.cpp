@@ -121,7 +121,7 @@ void Customer::bid(Item i,float new_price)
 			             fout.close();
 			             cout<<"Bid Successfully placed"<<endl;
 	               }
-                if ( (atof(tokens[0].c_str()) == i.get_item_id()) && (atof(tokens[2].c_str()) > new_price) )
+                if ( (atof(tokens[0].c_str()) == i.get_item_id()) && (atof(tokens[2].c_str()) >= new_price) )
                {
                     cout<<"\nCannot place bid, please increase the amount";
                }
