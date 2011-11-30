@@ -5,6 +5,7 @@
 #include "seller.h"
 #include "user.h"
 #include<fstream>
+#include<exception>
 
 using namespace std;
 
